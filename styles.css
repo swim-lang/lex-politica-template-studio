@@ -114,26 +114,60 @@ body {
 .stage {
   flex-grow: 1;
   background: var(--stage);
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   min-width: 0;
+}
+.stage-scroll {
+  flex: 1;
+  overflow: auto;
+  display: flex;
   padding: 40px;
 }
-.preview-wrap {
-  max-width: 100%;
-  max-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.preview-wrap { margin: auto; }
 #preview {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
   display: block;
-  width: auto;
   height: auto;
-  max-width: 100%;
-  max-height: calc(100vh - 72px - 80px);
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: stretch;
+  background: var(--heritage);
+  border: 1px solid var(--echelon);
+}
+.zoom-btn {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  background: var(--heritage);
+  border: none;
+  border-radius: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--echelon);
+  cursor: pointer;
+}
+.zoom-btn:hover { background: var(--placeholder); }
+.zoom-fit {
+  font-size: 13px;
+  border-left: 1px solid var(--echelon);
+}
+.zoom-fit.active { background: var(--echelon); color: var(--heritage); }
+.zoom-level {
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--echelon);
 }
 
 /* Right panel */

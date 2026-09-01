@@ -364,6 +364,7 @@ const TEMPLATES = [
 const state = {
   template: "portrait",
   format: "square",
+  zoom: null, // null = fit to stage; otherwise a scale factor of actual pixels
   values: {}, // per-template field values
 };
 for (const t of TEMPLATES) {
@@ -387,6 +388,46 @@ function renderPreview() {
   ctx.clearRect(0, 0, w, h);
   const t = currentTemplate();
   t.render(ctx, w, h, state.values[t.id], false);
+  layoutPreview();
+}
+
+/* ---------- zoom ---------- */
+
+const ZOOM_MIN = 0.1;
+const ZOOM_MAX = 2;
+
+function fitScale() {
+  const scroll = document.getElementById("stage-scroll");
+  const { w, h } = FORMATS[state.format];
+  const availW = scroll.clientWidth - 80;
+  const availH = scroll.clientHeight - 80;
+  return Math.min(1, availW / w, availH / h);
+}
+
+function currentScale() {
+  return state.zoom ?? fitScale();
+}
+
+function layoutPreview() {
+  const { w } = FORMATS[state.format];
+  const scale = currentScale();
+  previewCanvas.style.width = `${Math.round(w * scale)}px`;
+  document.getElementById("zoom-level").textContent = `${Math.round(scale * 100)}%`;
+  document.getElementById("zoom-fit").classList.toggle("active", state.zoom === null);
+}
+
+function setupZoom() {
+  const step = (dir) => {
+    const next = currentScale() * (dir > 0 ? 1.25 : 0.8);
+    state.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, next));
+    layoutPreview();
+  };
+  document.getElementById("zoom-in").addEventListener("click", () => step(1));
+  document.getElementById("zoom-out").addEventListener("click", () => step(-1));
+  document.getElementById("zoom-fit").addEventListener("click", () => {
+    state.zoom = null;
+    layoutPreview();
+  });
 }
 
 function renderThumb(t, canvas) {
@@ -563,11 +604,12 @@ async function init() {
   buildFields();
   buildFormatPicker();
   setupPhoto();
+  setupZoom();
   renderPreview();
 
   document.getElementById("export-png").addEventListener("click", () => exportImage("image/png"));
   document.getElementById("export-jpeg").addEventListener("click", () => exportImage("image/jpeg"));
-  window.addEventListener("resize", renderPreview);
+  window.addEventListener("resize", layoutPreview);
 }
 
 init();
